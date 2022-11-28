@@ -210,7 +210,7 @@
 ## exit status will not be shown.  The value can contain ANSI escape sequences.
 
 #bleopt exec_errexit_mark=$'\e[91m[ble: exit %d]\e[m'
-
+bleopt exec_errexit_mark=
 
 ## "exec_elapsed_mark" specifies the format of the command execution time
 ## report.  It takes two arguments: the first is the string that explains the
@@ -227,8 +227,8 @@
 ## percentage of the CPU core usage in integer, which can be calculated by
 ## "(usr+sys)*100/real".  The other values are all in unit of milliseconds.
 
-#bleopt exec_elapsed_mark=$'\e[94m[ble: elapsed %s (CPU %s%%)]\e[m'
-#bleopt exec_elapsed_enabled='usr+sys>=10000'
+#bleopt/declare -v exec_elapsed_mark $'\e[94m[ble: elapsed %s (CPU %s%%)]\e[m'
+#bleopt/declare -v exec_elapsed_enabled 'usr+sys>=10000'
 
 
 ## The following setting controls the exit when jobs are remaining. When an
@@ -254,22 +254,6 @@
 ## sharing turned on.
 
 #bleopt history_share=
-
-
-## This option controls the target range in the command history for
-## "erasedups", which is performed when it is specified in "HISTCONTROL".  When
-## this option has an empty value, the target range is the entire history as in
-## the plain Bash.  When this option evaluates to a positive integer "count",
-## the target range is the last "n" entries in the command history.  When this
-## option evaluates to a non-positive integer "offset", "offset" specifies the
-## beginning of the target range relative to the history count at the session
-## start.  The end of the target range is always the end of the command
-## history.
-
-#bleopt history_erasedups_limit=       # entire history
-#bleopt history_erasedups_limit=0      # only new items added in this session
-#bleopt history_erasedups_limit=-1000  # new items and 1000 prev-session items
-#bleopt history_erasedups_limit=1000   # last 1000 items
 
 
 ## The following setting controls the behavior of the widget
@@ -330,24 +314,6 @@
 #bleopt term_modifyOtherKeys_external=auto
 #bleopt term_modifyOtherKeys_internal=auto
 
-
-## The following setting controls whether the kitty-keyboard-protocol sequences
-## should pass-through the terminal multiplexers when the outermost terminal is
-## kitty.  When this option has a non-empty string, the pass-through kitty
-## protocol sequences are enabled.
-##
-## * This is intended to be used with tmux-3.4+.  This works with tmux-3.3a and
-##   below as far as the user does not enable CapsLock or NumLock.  Note that
-##   this might cause problems of keyboard inputs after detaching from tmux;
-##   You might lose the control of the terminal applications that do not
-##   support extended keys outside the terminal multiplexers.
-##
-## * This will cause the same problems when used with multiple windows in GNU
-##   screen.  You will lose the control of the terminal applications without
-##   the support for extended keys when there are more than one ble.sh session
-##   or when there is at least one foreground ble.sh session in GNU screen.
-
-#bleopt term_modifyOtherKeys_passthrough_kitty_protocol=1
 
 ##-----------------------------------------------------------------------------
 ## Rendering options
@@ -482,13 +448,6 @@
 
 #bleopt decode_macro_limit=1024
 
-
-## When a non-empty value is specified to this settings, the terminal's
-## Bracketed Paste Mode (DEC mode 2004) is enabled.  This setting is
-## synchronized with the readline variable "enable-bracketed-paste".
-
-#bleopt term_bracketed_paste_mode=on
-
 ##-----------------------------------------------------------------------------
 ## Settings for completion
 
@@ -603,27 +562,6 @@
 #bleopt complete_menu_style=align-nowrap
 
 
-## When a non-empty value is specified to this setting, the matching text on
-## the right of the cursor is removed on the insertion of the completion.  This
-## setting is synchronized with the readline variable "skip-completed-text".
-
-#bleopt complete_skip_matched=on
-
-
-## When a non-empty value is specified to this setting, the highlighting of the
-## menu items is enabled.  This setting is synchronized with the readline
-## variable "colored-stats".
-
-#bleopt complete_menu_color=on
-
-
-## When a non-empty value is specified to this setting, the part of the menu
-## items matching with the already input text is highlighted.  This setting is
-## synchronized with the readline variable "colored-completion-prefix".
-
-#bleopt complete_menu_color_match=on
-
-
 ## The following settings specify the maximal and minimal align widths for
 ## complete_menu_style="align" and "align-nowrap".
 
@@ -652,57 +590,15 @@
 #bleopt menu_desc_multicolumn_width=65
 
 
-## When this Readline setting is enabled, the cases of alphabets are ignored on
-## completion generation.
-
-#bind 'set completion-ignore-case off'
-
-
-## When this Readline setting is turned on, suffixes are added to the filename
-## completions in the menu.  The characters "@", "/" and "*" are added to
-## symbolic links, directories and executables, respectively.
-
-#bind 'set visible-stats off'
-
-
-## When this Readline setting is turned on, the suffix "/" is inserted after
-## the insertion of directory names.
-
-#bind 'set mark-directories on'
-
-
-## When this Readline setting is turned on, the suffix "/" is inserted after
-## symbolic links pointing to directories.
-
-#bind 'set mark-symlinked-directories on'
-
-
-## When this Readline setting is turned on, the filenames starting with "." is
-## also generated as possible completions.
-
-#bind 'set match-hidden-files on'
-
-
-## By default, when filenames of the form "dir/file*" is shown in the menu, the
-## part of the directory name "dir/" is omitted.  When this Readline setting is
-## turned on, the directory name of filename completions are not omitted.
-
-#bind 'set menu-complete-display-prefix off'
-
 ##-----------------------------------------------------------------------------
 ## Color settings
 
-## The setting "term_index_colors" specifies the number of index colors used to
-## specify colors in the terminal.  The value "auto" means that the use of
-## index colors are determined based on the terminfo database and the value of
-## TERM shell variable.  Otherwise, the value is evaluated as an arithmetic
-## expression.  When it is evaluated to 256, the index colors are assumed to be
-## xterm 256-color palette (16 basic + 6x6x6 color cube + 24 gray scale).  When
-## it is evaluated to 88, the index colors are assumed to be xterm 88-color
-## palette (16 basic + 4x4x4 color cube + 8 gray scale).  When it is evaluated
-## to 0, ble.sh will never use the index colors to set colors.  When it is
-## evaluated to other integers, the value specifies the maximum available
-## index.
+## The setting "term_index_colors" specifies the number of index colors
+## supported by you terminal.  The value 256 is treated as xterm 256-color
+## palette (16 basic + 6x6x6 color cube + 24 gray scale). The value 88 is
+## treated as xterm 88-color palette (16 basic + 4x4x4 color cube + 8 gray
+## scale).  The value 0 means that the terminal does not support extra colors
+## other than basic colors.
 
 #bleopt term_index_colors=256
 
@@ -733,7 +629,7 @@
 ## variable type is enabled.  All of these settings have non-empty values by
 ## default.
 
-#bleopt highlight_syntax=
+bleopt highlight_syntax=
 #bleopt highlight_filename=
 #bleopt highlight_variable=
 
@@ -859,67 +755,23 @@
 #ble-bind -f C-w 'kill-region-or kill-uword'
 #ble-bind -f M-w 'copy-region-or copy-uword'
 
-##-----------------------------------------------------------------------------
-## Settings for Emacs mode
-
-function blerc/emacs-load-hook {
-  #----------------------------------------------------------------------------
-  # Settings for the mode indicator
-
-  ## The following option specifies the content of the mode indicator shown in
-  ## the info line as a prompt sequence.
-
-  #bleopt prompt_emacs_mode_indicator='\q{keymap:emacs/mode-indicator}'
-
-
-  ## The following option specifies the multiline mode name used in the prompt
-  ## sequence \q{keymap:emacs/mode-indicator} in the multiline editing mode.
-
-  # default
-  #bleopt keymap_emacs_mode_string_multiline=$'\e[1m-- MULTILINE --\e[m'
-  # do not show the mode name
-  #bleopt keymap_emacs_mode_string_multiline=
-
-  #----------------------------------------------------------------------------
-  # Keybindings
-
-  ## With the following setting, RET and C-m always causes the execution of the
-  ## command even in the multiline mode or when the command is not
-  ## syntactically completed.
-
-  #ble-bind -f C-m 'accept-line'
-  #ble-bind -f RET 'accept-line'
-
-  return
-}
-blehook/eval-after-load keymap_emacs blerc/emacs-load-hook
 
 ##-----------------------------------------------------------------------------
-## Settings for Vim mode
+## Settings for vim-mode
 
 function blerc/vim-load-hook {
   ((_ble_bash>=40300)) && builtin bind 'set keyseq-timeout 1'
 
   #----------------------------------------------------------------------------
-  # Settings for the mode indicator
+  # Settings for the mode name
 
-  ## The following option specifies the content of the mode indicator shown in
-  ## the info line as a prompt sequence.
-
-  #bleopt prompt_vi_mode_indicator='\q{keymap:vi/mode-indicator}'
-
-
-  ## The following option controls whether the prompt sequence
-  ## \q{keymap:vi/mode-indicator} is activated.  When this option has a
-  ## non-empty value, \q{keymap:vi/mode-indicator} is expanded to the mode
-  ## indicator. Otherwise, \q{keymap:vi/mode-indicator} is expanded to the
-  ## empty string.
+  ## The option "keymap_vi_mode_show" controls if the mode line is shown.  When
+  ## this option has a non-empty value, the mode line is shown.
 
   #bleopt keymap_vi_mode_show=1
 
 
-  ## The following options specify the name of modes in
-  ## \q{keymap:vi/mode-indicator}.
+  ## The following settings specify the name of modes in the mode line.
 
   #bleopt keymap_vi_mode_name_insert=INSERT
   #bleopt keymap_vi_mode_name_replace=REPLACE
@@ -930,29 +782,26 @@ function blerc/vim-load-hook {
   #bleopt keymap_vi_mode_name_blockwise=BLOCK
 
 
-  ## This option specifies the result of \q{keymap:vi/mode-indicator} in the
-  ## normal mode.  For example, if you want to show an explicit name of the
-  ## normal mode like in other modes, please use the following setting:
+  ## This option specifies the string shown below the edited line in normal
+  ## mode.  For example, if you want to show an explicit name of the mode like
+  ## in other modes, please use the following setting:
 
-  #bleopt keymap_vi_mode_string_nmap:=$'\e[1m-- NORMAL --\e[m'
+  #bleopt keymap_vi_mode_string_nmap:=$'\e[1m~\e[m'
 
 
-  ## This option specifies that all the prompts should be recalculated on the
-  ## mode change.  When this option has a non-empty value, the prompt will be
-  ## recalculated.
+  ## The setting "keymap_vi_mode_update_prompt" specifies that the prompt
+  ## should be recalculated on the mode change.  When this option has a
+  ## non-empty value, the prompt will be recalculated.
 
   #bleopt keymap_vi_mode_update_prompt=
 
   #----------------------------------------------------------------------------
   # Keybindings
 
-  ## The following setting sets up the keymap settings with Meta modifiers.
-  ## With this setting, M-RET can be used to insert a newline in the
-  ## commandline.  In this case, C-RET can be optionally configured so that it
-  ## forcibly executes the command.
+
+  ## The following setting sets up the keymap settings with Meta modifiers
 
   #ble-decode/keymap:vi_imap/define-meta-bindings
-  #ble-bind -m vi_imap -f 'C-RET' 'accept-line'
 
 
   ## The default mapping of C-o is vi_imap/single-command-mode.  If you want to
@@ -1085,18 +934,7 @@ blehook/eval-after-load keymap_vi blerc/vim-load-hook
 ## syntax analysis information and the syntax tree.  This is only effective in
 ## devel versions.
 
-#bleopt syntax_debug=
-
-
-## When the option "debug_xtrace" contains a non-empty value, xtrace (set -x)
-## is enabled for the internal processing of ble.sh.  The value is used for the
-## xtrace output log filename. [ Caution: The file size of the log file can
-## soon grow up to hundred megabytes or to gigabytes. ]  The option
-## "debug_xtrace_ps4" specifies the value of PS4 for xtrace enabled by
-## "debug_xtrace".
-
-#bleopt debug_xtrace=~/blesh.xtrace
-#bleopt debug_xtrace_ps4='+ '
+#bleopt_syntax_debug=
 
 
 ## [The setting "openat_base" needs to be set before ble.sh is loaded or
